@@ -10,6 +10,8 @@ export interface AppState {
   filter: string;
 }
 
+const CONTACTS_KEY = 'Contacts'
+
 export default class App extends Component<{}, AppState> {
   state = {
     contacts: [
@@ -20,6 +22,22 @@ export default class App extends Component<{}, AppState> {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem(CONTACTS_KEY)
+    const parsedContacts: Array<Contact> = contacts && JSON.parse(contacts)
+    if (parsedContacts) {
+      this.setState({
+        contacts: parsedContacts
+      })
+    }
+  }
+
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppState>): void {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(this.state.contacts))
+    }
+  }
 
   setNewContact = (contact: Contact) => {
     this.setState(prev => ({
